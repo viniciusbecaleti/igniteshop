@@ -21,7 +21,7 @@ export function Header() {
 
       const priceIds = cartItems.map(cartItem => cartItem.defaultPriceId)
 
-      const response = await axios.post("/api/checkout", {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_URL}/api/checkout`, {
         priceIds: priceIds
       })
 
