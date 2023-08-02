@@ -1,10 +1,9 @@
-import { useContext, useState } from "react"
+import { useContext } from "react"
 import { GetStaticPaths, GetStaticProps } from "next"
 import Stripe from "stripe"
 import { stripe } from "../../libs/stripe"
 import Image from "next/image"
 import { useRouter } from "next/router"
-import axios from "axios"
 
 import { Container, ContainerSkeleton, Details, ImageContainer } from "../../styles/pages/Product"
 import Head from "next/head"

@@ -30,7 +30,7 @@ export function Header() {
       window.location.href = checkoutUrl
     } catch (error) {
       setIsCreatingCheckoutSession(false)
-      alert("Falha ao redirecionar ao checkout")
+      console.log(`Falha ao redirecionar ao checkout: ${error}`)
     }
   }
 
