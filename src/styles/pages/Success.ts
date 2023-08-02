@@ -7,8 +7,9 @@ export const Container = styled('div', {
   justifyContent: 'center',
 
   maxWidth: 1180,
-  height: 656,
+  minHeight: '100vh',
   margin: '0 auto',
+  padding: '1.5rem',
 
   h1: {
     fontSize: '$2xl',
@@ -41,21 +42,29 @@ export const Container = styled('div', {
   }
 })
 
+export const Gallery = styled('div', {
+  display: 'flex',
+  marginTop: 100,
+  marginBottom: '3rem',
+})
+
 export const ImageContainer = styled('div', {
-  width: '100%',
-  maxWidth: 130,
-  height: 145,
+  width: 140,
+  height: 140,
+  borderRadius: '50%',
   background: 'linear-gradient(180deg, #1ea483 0%, #7465d4 100%)',
-  borderRadius: 8,
-  padding: '0.25rem',
+  boxShadow: '0 0 60px 0 rgba(0, 0, 0, .8)',
 
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
 
-  marginTop: '4rem',
-
   img: {
     objectFit: 'cover',
+  },
+
+  '&:not(:first-child)': {
+    position: 'relative',
+    marginLeft: -50,
   }
 })

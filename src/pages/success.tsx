@@ -3,19 +3,18 @@ import Link from "next/link";
 import Stripe from "stripe";
 import { GetServerSideProps } from "next";
 import { stripe } from "../libs/stripe";
-
-import { Container, ImageContainer } from "../styles/pages/Success";
 import Head from "next/head";
+import { Container, Gallery, ImageContainer } from "../styles/pages/Success";
+import logoImg from "../assets/logo.svg"
 
 interface SuccessProps {
   customerName: string
-  product: {
-    name: string,
+  products: {
     imageUrl: string
-  }
+  }[]
 }
 
-export default function Success({ customerName, product }: SuccessProps) {
+export default function Success({ customerName, products }: SuccessProps) {
   return (
     <>
       <Head>
@@ -24,14 +23,25 @@ export default function Success({ customerName, product }: SuccessProps) {
       </Head>
 
       <Container>
-        <h1>Compra efetuada</h1>
+        <Image
+          src={logoImg}
+          width={130}
+          height={52}
+          alt=""
+        />
 
-        <ImageContainer>
-          <Image src={product.imageUrl} width="120" height="110" alt="" />
-        </ImageContainer>
+        <Gallery>
+          {products.map(product => (
+            <ImageContainer key={product.imageUrl}>
+              <Image src={product.imageUrl} width="130" height="130" alt="" />
+            </ImageContainer>
+          ))}
+        </Gallery>
+
+        <h1>Compra efetuada!</h1>
 
         <p>
-          Uhuul <strong>{customerName}</strong>, sua <strong>{product.name}</strong> já está a caminho da sua casa. 
+          Uhuul <strong>{customerName}</strong>, sua compra de {products.length} camiseta{products.length > 1 && 's'} já está a caminho da sua casa.
         </p>
 
         <Link href="/">
@@ -43,7 +53,7 @@ export default function Success({ customerName, product }: SuccessProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-  if (!query.sessionId) {
+  if (!query.session_id) {
     return {
       redirect: {
         destination: "/",
@@ -59,18 +69,19 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   })
 
   const customerName = session.customer_details.name
-  
-  const product = session.line_items.data[0].price.product as Stripe.Product
-  const productName = product.name
-  const productImage = product.images[0]
-  
+
+  const products = session.line_items.data.map(item => {
+    const product = item.price.product as Stripe.Product
+
+    return {
+      imageUrl: product.images[0]
+    }
+  })
+
   return {
     props: {
       customerName,
-      product: {
-        name: productName,
-        imageUrl: productImage
-      }
+      products
     }
   }
 }

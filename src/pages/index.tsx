@@ -1,21 +1,30 @@
+import { MouseEvent, useContext } from "react";
 import Image from "next/image";
 import { GetStaticProps } from "next";
 import { useKeenSlider } from 'keen-slider/react'
 import Stripe from "stripe";
 import { stripe } from "../libs/stripe";
 import Link from "next/link";
+import Head from "next/head";
+import { Handbag } from "phosphor-react";
+
+import { CartContext } from "../contexts/CartContext";
 
 import 'keen-slider/keen-slider.min.css'
 import { Container, Product } from "../styles/pages/Home";
-import Head from "next/head";
+import { currencyFormatter } from "../utils/formatter";
+import { DefaultLayout } from "../layouts/DefaultLayout";
 
-interface HomeProps { 
-  products: {
-    id: string
-    name: string
-    imageUrl: string
-    price: string
-  }[]
+interface Product {
+  id: string
+  name: string
+  imageUrl: string
+  price: number
+  defaultPriceId: string
+}
+
+interface HomeProps {
+  products: Product[]
 }
 
 export default function Home({ products }: HomeProps) {
@@ -26,8 +35,15 @@ export default function Home({ products }: HomeProps) {
     }
   })
 
+  const { addItemToCart } = useContext(CartContext)
+
+  function handleAddProductToCart(event: MouseEvent<HTMLButtonElement>, product: Product) {
+    event.stopPropagation()
+    addItemToCart(product)
+  }
+
   return (
-    <>
+    <DefaultLayout>
       <Head>
         <title>Ignite Shop</title>
       </Head>
@@ -46,14 +62,23 @@ export default function Home({ products }: HomeProps) {
               />
 
               <footer>
-                <strong>{product.name}</strong>
-                <span>{product.price}</span>
+                <div>
+                  <strong>{product.name}</strong>
+                  <span>{currencyFormatter.format(product.price)}</span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={(event) => handleAddProductToCart(event, product)}
+                >
+                  <Handbag size={32} weight='bold' />
+                </button>
               </footer>
             </Product>
           </Link>
         ))}
       </Container>
-    </>
+    </DefaultLayout>
   )
 }
 
@@ -69,10 +94,8 @@ export const getStaticProps: GetStaticProps = async () => {
       id: product.id,
       name: product.name,
       imageUrl: product.images[0],
-      price: new Intl.NumberFormat('pt-br', {
-        style: 'currency',
-        currency: 'BRL'
-      }).format(price.unit_amount! / 100),
+      price: price.unit_amount! / 100,
+      defaultPriceId: price.id
     }
   })
 
